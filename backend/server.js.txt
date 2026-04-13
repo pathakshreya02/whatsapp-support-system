@@ -1,0 +1,28 @@
+const express = require("express");
+const router = express.Router();
+const Message = require("../models/Message");
+
+// CREATE MESSAGE
+router.post("/", async (req, res) => {
+  try {
+    const newMessage = new Message(req.body);
+    await newMessage.save();
+
+    res.json({ message: "Message saved" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// GET ALL MESSAGES  ⭐ IMPORTANT
+router.get("/", async (req, res) => {
+  try {
+    const messages = await Message.find();
+
+    res.json(messages);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+module.exports = router;
