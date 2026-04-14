@@ -66,13 +66,12 @@ function App() {
   };
 
   // DELETE MESSAGE
-  const deleteMessage = async (id) => {
-    await fetch(`${BASE_URL}/api/messages/${id}`, {
-      method: "DELETE"
-    });
-    getMessages();
-  };
-
+const deleteMessage = async (id) => {
+  await fetch(`${BASE_URL}/api/messages/${id}`, {
+    method: "DELETE"
+  });
+  getMessages();
+};
   return (
     <div className="container">
       <h2>WhatsApp Support System</h2>
@@ -94,9 +93,9 @@ function App() {
             </small>
 
             {/* DELETE BUTTON */}
-            <button onClick={() => deleteMessage(msg._id)}>
-              ❌
-            </button>
+       <button className="delete-btn" onClick={() => deleteMessage(msg._id)}>
+  🗑️
+</button>
           </div>
         ))}
         <div ref={chatEndRef}></div>
