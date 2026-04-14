@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 
-const BASE_URL = "http://localhost:5000";
+const BASE_URL =
+  window.location.hostname === "localhost"
+    ? "http://localhost:5000"
+    : "https://whatsapp-support-system.onrender.com";
 
 function Register({ setShowLogin }) {
   const [email, setEmail] = useState("");
