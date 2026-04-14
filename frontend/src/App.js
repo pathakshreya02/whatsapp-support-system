@@ -2,12 +2,38 @@ import React, { useEffect, useState, useRef } from "react";
 import "./App.css";
 import Login from "./Login";
 import Register from "./Register";
-import sendSound from "./send.mp3"; // 🔔 ADD THIS FILE
+import Admin from "./Admin";
 
 const BASE_URL =
   window.location.hostname === "localhost"
     ? "http://localhost:5000"
     : "https://whatsapp-support-system.onrender.com";
+
+// 🤖 SMART BOT
+const getBotReply = (msg) => {
+  msg = msg.toLowerCase();
+
+  if (msg.includes("hello") || msg.includes("hi")) {
+    return "Hello 😊 How can I assist you today?";
+  }
+  if (msg.includes("price") || msg.includes("cost")) {
+    return "Our pricing depends on your requirements. Please contact support 📞";
+  }
+  if (msg.includes("help") || msg.includes("issue")) {
+    return "I'm here to help! Please describe your issue in detail.";
+  }
+  if (msg.includes("course")) {
+    return "We offer multiple courses. Which one are you interested in?";
+  }
+  if (msg.includes("thank")) {
+    return "You're welcome! 😊";
+  }
+  if (msg.includes("bye")) {
+    return "Goodbye! Have a great day 👋";
+  }
+
+  return "Sorry, I didn't understand that. Can you rephrase?";
+};
 
 function App() {
   const [user, setUser] = useState(null);
@@ -17,6 +43,7 @@ function App() {
   const chatEndRef = useRef(null);
   const [isTyping, setIsTyping] = useState(false);
 
+  // GET MESSAGES
   const getMessages = () => {
     fetch(`${BASE_URL}/api/messages`)
       .then((res) => res.json())
@@ -34,17 +61,28 @@ function App() {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  // ✅ ADMIN ROUTE (CORRECT PLACE)
+  if (window.location.pathname === "/admin") {
+    return <Admin />;
+  }
+
+  // LOGIN / REGISTER
   if (!user) {
     return showRegister ? (
       <Register setShowLogin={() => setShowRegister(false)} />
     ) : (
-      <Login setUser={setUser} setShowRegister={() => setShowRegister(true)} />
+      <Login
+        setUser={setUser}
+        setShowRegister={() => setShowRegister(true)}
+      />
     );
   }
 
-  // 🔔 SEND MESSAGE + SOUND
+  // SEND MESSAGE + BOT + SOUND
   const sendMessage = async () => {
     if (!text) return;
+
+    const userMessage = text;
 
     await fetch(`${BASE_URL}/api/messages`, {
       method: "POST",
@@ -53,19 +91,39 @@ function App() {
       },
       body: JSON.stringify({
         phone: "9876543210",
-        message: text,
+        message: userMessage,
         sender: "admin"
       })
     });
 
-    // 🔔 PLAY SOUND
-    const audio = new Audio(sendSound);
-    audio.play();
+    // 🔔 SOUND
+    const audio = new Audio("https://www.soundjay.com/buttons/sounds/button-16.mp3");
+    audio.play().catch(() => {});
 
     setText("");
     getMessages();
+
+    // 🤖 BOT REPLY
+    setTimeout(async () => {
+      const reply = getBotReply(userMessage);
+
+      await fetch(`${BASE_URL}/api/messages`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          phone: "9876543210",
+          message: reply,
+          sender: "user"
+        })
+      });
+
+      getMessages();
+    }, 1000);
   };
 
+  // DELETE
   const deleteMessage = async (id) => {
     await fetch(`${BASE_URL}/api/messages/${id}`, {
       method: "DELETE"
@@ -73,23 +131,20 @@ function App() {
     getMessages();
   };
 
+  // EDIT
   const editMessage = async (id, oldText) => {
     const newText = prompt("Edit message:", oldText);
     if (!newText) return;
 
-    try {
-      await fetch(`${BASE_URL}/api/messages/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ message: newText })
-      });
+    await fetch(`${BASE_URL}/api/messages/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ message: newText })
+    });
 
-      getMessages();
-    } catch (err) {
-      console.log(err);
-    }
+    getMessages();
   };
 
   return (
@@ -105,6 +160,22 @@ function App() {
           </div>
         </div>
 
+        {/* ADMIN BUTTON */}
+        <button
+          onClick={() => (window.location.href = "/admin")}
+          style={{
+            marginLeft: "10px",
+            background: "#00a884",
+            border: "none",
+            color: "white",
+            padding: "5px 10px",
+            cursor: "pointer"
+          }}
+        >
+          Admin
+        </button>
+
+        {/* LOGOUT */}
         <button
           onClick={() => setUser(null)}
           style={{
@@ -152,8 +223,7 @@ function App() {
                   background: "white",
                   borderRadius: "50%",
                   border: "none",
-                  cursor: "pointer",
-                  boxShadow: "0 0 5px rgba(0,0,0,0.3)"
+                  cursor: "pointer"
                 }}
               >
                 📝
@@ -165,7 +235,7 @@ function App() {
         <div ref={chatEndRef}></div>
       </div>
 
-      {/* ⏳ TYPING INDICATOR */}
+      {/* TYPING */}
       {isTyping && (
         <div style={{ color: "#00a884", fontSize: "12px", marginLeft: "10px" }}>
           typing...
@@ -179,7 +249,6 @@ function App() {
           onChange={(e) => {
             setText(e.target.value);
             setIsTyping(true);
-
             setTimeout(() => setIsTyping(false), 1000);
           }}
           placeholder="Type a message"
