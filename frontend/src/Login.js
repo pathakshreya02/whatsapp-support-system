@@ -35,8 +35,9 @@ const handleLogin = async () => {
   }
 };
 
-  return (
-    <div className="login-container">
+ return (
+  <div className="login-container">
+    <div className="login-box">
       <h2>Login</h2>
 
       <input
@@ -52,25 +53,9 @@ const handleLogin = async () => {
 
       <button onClick={handleLogin}>Login</button>
 
-      {/* ✅ REGISTER OPTION */}
-      <p style={{ marginTop: "15px" }}>
-        Don't have an account?
+      <p onClick={() => setShowRegister(true)} style={{ cursor: "pointer", marginTop: "10px", color: "#00a884" }}>
+        Don't have an account? Register
       </p>
-
-      <button
-        onClick={() => setShowRegister(true)}
-        style={{
-          padding: "8px",
-          backgroundColor: "#25D366",
-          color: "white",
-          border: "none",
-          cursor: "pointer"
-        }}
-      >
-        Register
-      </button>
     </div>
-  );
-}
-
-export default Login;
+  </div>
+);

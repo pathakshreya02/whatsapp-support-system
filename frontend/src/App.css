@@ -1,7 +1,7 @@
 body {
   margin: 0;
   font-family: Arial;
-  background: #ece5dd;
+  background: #0b141a;
 }
 
 /* Chat UI */
@@ -11,46 +11,75 @@ body {
   height: 100vh;
   display: flex;
   flex-direction: column;
-  background: #efeae2;
+  background: #111b21;
   border-radius: 10px;
   overflow: hidden;
-  box-shadow: 0 0 10px rgba(0,0,0,0.2);
+  box-shadow: 0 0 15px rgba(0,0,0,0.5);
 }
 
+/* HEADER */
 h2 {
-  background: #075e54;
-  color: white;
+  background: #202c33;
+  color: #e9edef;
   padding: 15px;
   margin: 0;
   text-align: center;
 }
 
+/* CHAT AREA */
 .chat-box {
   flex: 1;
   overflow-y: auto;
   padding: 10px;
+  background: #0b141a;
 }
 
 /* MESSAGE */
 .msg {
-  padding: 10px;
+  padding: 10px 12px;
   margin: 8px;
-  border-radius: 10px;
+  border-radius: 12px;
   max-width: 70%;
   position: relative;
+  font-size: 14px;
+  line-height: 1.4;
   animation: fadeIn 0.3s ease-in;
 }
 
 .admin {
-  background: #dcf8c6;
+  background: #005c4b;
+  color: white;
   align-self: flex-end;
 }
 
 .user {
-  background: white;
+  background: #202c33;
+  color: white;
   align-self: flex-start;
 }
 
+/* MESSAGE TAIL */
+.admin::after {
+  content: "";
+  position: absolute;
+  right: -8px;
+  top: 10px;
+  border-left: 8px solid #005c4b;
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+}
+
+.user::after {
+  content: "";
+  position: absolute;
+  left: -8px;
+  top: 10px;
+  border-right: 8px solid #202c33;
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+}
+
+/* TIME */
 .msg small {
   display: block;
   font-size: 10px;
@@ -59,15 +88,18 @@ h2 {
   opacity: 0.6;
 }
 
-/* DELETE BUTTON (HIDDEN UNTIL HOVER 😎) */
+/* DELETE BUTTON */
 .delete-btn {
   position: absolute;
-  top: 5px;
-  right: 5px;
-  background: transparent;
+  top: -5px;
+  right: -5px;
+  background: white;
+  border-radius: 50%;
   border: none;
+  font-size: 12px;
   cursor: pointer;
   display: none;
+  box-shadow: 0 0 5px rgba(0,0,0,0.3);
 }
 
 .msg:hover .delete-btn {
@@ -78,50 +110,69 @@ h2 {
 .input-box {
   display: flex;
   padding: 10px;
-  background: #f0f0f0;
+  background: #202c33;
 }
 
 .input-box input {
   flex: 1;
-  padding: 10px;
+  padding: 12px;
   border-radius: 20px;
   border: none;
-  outline: none;
+  background: #2a3942;
+  color: white;
 }
 
 .input-box button {
   margin-left: 10px;
-  padding: 10px;
+  padding: 12px;
   border-radius: 50%;
-  background: #075e54;
+  background: #00a884;
   color: white;
   border: none;
   cursor: pointer;
 }
 
-/* Login UI */
+/* LOGIN / REGISTER UI */
 .login-container {
+  height: 100vh;
   display: flex;
-  flex-direction: column;
+  justify-content: center;
   align-items: center;
-  margin-top: 100px;
+  background: linear-gradient(135deg, #0b141a, #005c4b);
 }
 
-.login-container input {
-  margin: 10px;
-  padding: 10px;
-  width: 250px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
+.login-box {
+  background: #202c33;
+  padding: 30px;
+  border-radius: 12px;
+  width: 300px;
+  text-align: center;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.6);
 }
 
-.login-container button {
-  padding: 10px;
-  background: #075e54;
+.login-box h2 {
+  color: white;
+  margin-bottom: 20px;
+}
+
+.login-box input {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border-radius: 8px;
+  border: none;
+  background: #2a3942;
+  color: white;
+}
+
+.login-box button {
+  width: 100%;
+  padding: 12px;
+  background: #00a884;
   color: white;
   border: none;
+  border-radius: 8px;
   cursor: pointer;
-  border-radius: 5px;
 }
 
 /* ANIMATION */

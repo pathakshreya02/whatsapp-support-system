@@ -22,11 +22,11 @@ function Register({ setShowLogin }) {
       const data = await res.json();
       console.log(data);
 
-      if (data.message === "User created") {
+      if (res.ok) {
         alert("Registered Successfully!");
         setShowLogin(true);
       } else {
-        alert(data.message || "Registration failed");
+        alert(data.message || data.error || "Registration failed");
       }
     } catch (err) {
       console.log(err);
@@ -35,11 +35,36 @@ function Register({ setShowLogin }) {
   };
 
   return (
-    <div>
-      <h2>Register</h2>
-      <input placeholder="Email" onChange={(e) => setEmail(e.target.value)} />
-      <input placeholder="Password" type="password" onChange={(e) => setPassword(e.target.value)} />
-      <button onClick={handleRegister}>Register</button>
+    <div className="login-container">
+      <div className="login-box">
+        <h2>Register</h2>
+
+        <input
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+
+        <input
+          placeholder="Password"
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+
+        <button onClick={handleRegister}>Register</button>
+
+        <p
+          onClick={() => setShowLogin(true)}
+          style={{
+            cursor: "pointer",
+            marginTop: "10px",
+            color: "#00a884"
+          }}
+        >
+          Already have an account? Login
+        </p>
+      </div>
     </div>
   );
 }
