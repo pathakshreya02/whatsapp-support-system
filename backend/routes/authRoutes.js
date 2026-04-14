@@ -7,12 +7,11 @@ const jwt = require("jsonwebtoken");
 // REGISTER
 router.post("/register", async (req, res) => {
   try {
-    console.log("BODY:", req.body);
+    const { email, password } = req.body;
 
-    const { email, password } = req.body || {}; // ✅ FIX
-
+    // check if empty
     if (!email || !password) {
-      return res.json({ error: "Missing email or password" });
+      return res.status(400).json({ error: "Please enter all fields" });
     }
 
     const existingUser = await User.findOne({ email });
@@ -21,6 +20,7 @@ router.post("/register", async (req, res) => {
       return res.json({ message: "User already exists" });
     }
 
+    // hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser = new User({
@@ -33,11 +33,10 @@ router.post("/register", async (req, res) => {
     res.json({ message: "User created" });
 
   } catch (err) {
-    console.log("ERROR:", err); // 👈 IMPORTANT
+    console.log("REGISTER ERROR:", err); // 👈 important
     res.status(500).json({ error: "Server error" });
   }
 });
-
 // LOGIN
 router.post("/login", async (req, res) => {
   try {
