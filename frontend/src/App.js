@@ -15,30 +15,25 @@ function App() {
   const [text, setText] = useState("");
   const chatEndRef = useRef(null);
 
-  // ✅ GET MESSAGES (SAFE)
+  // GET MESSAGES
   const getMessages = () => {
     fetch(`${BASE_URL}/api/messages`)
       .then(res => res.json())
       .then(data => {
-        if (Array.isArray(data)) {
-          setMessages(data);
-        } else {
-          setMessages([]);
-        }
-      })
-      .catch(err => console.log(err));
+        if (Array.isArray(data)) setMessages(data);
+        else setMessages([]);
+      });
   };
 
   useEffect(() => {
     getMessages();
   }, []);
 
-  // ✅ AUTO SCROLL
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // 🔐 LOGIN / REGISTER SCREEN
+  // LOGIN / REGISTER
   if (!user) {
     return showRegister ? (
       <Register setShowLogin={() => setShowRegister(false)} />
@@ -50,28 +45,32 @@ function App() {
     );
   }
 
-  // ✅ SEND MESSAGE
+  // SEND MESSAGE
   const sendMessage = async () => {
     if (!text) return;
 
-    try {
-      await fetch(`${BASE_URL}/api/messages`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          phone: "9876543210",
-          message: text,
-          sender: "admin"
-        })
-      });
+    await fetch(`${BASE_URL}/api/messages`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        phone: "9876543210",
+        message: text,
+        sender: "admin"
+      })
+    });
 
-      setText("");
-      getMessages();
-    } catch (err) {
-      console.log(err);
-    }
+    setText("");
+    getMessages();
+  };
+
+  // DELETE MESSAGE
+  const deleteMessage = async (id) => {
+    await fetch(`${BASE_URL}/api/messages/${id}`, {
+      method: "DELETE"
+    });
+    getMessages();
   };
 
   return (
@@ -81,20 +80,25 @@ function App() {
       <button onClick={() => setUser(null)}>Logout</button>
 
       <div className="chat-box">
-        {Array.isArray(messages) &&
-          messages.map((msg) => (
-            <div
-              key={msg._id}
-              className={msg.sender === "admin" ? "msg admin" : "msg user"}
-            >
-              <div>{msg.message}</div>
-              <small>
-                {msg.createdAt
-                  ? new Date(msg.createdAt).toLocaleTimeString()
-                  : ""}
-              </small>
-            </div>
-          ))}
+        {messages.map((msg) => (
+          <div
+            key={msg._id}
+            className={msg.sender === "admin" ? "msg admin" : "msg user"}
+          >
+            <div>{msg.message}</div>
+
+            <small>
+              {msg.createdAt
+                ? new Date(msg.createdAt).toLocaleTimeString()
+                : ""}
+            </small>
+
+            {/* DELETE BUTTON */}
+            <button onClick={() => deleteMessage(msg._id)}>
+              ❌
+            </button>
+          </div>
+        ))}
         <div ref={chatEndRef}></div>
       </div>
 
