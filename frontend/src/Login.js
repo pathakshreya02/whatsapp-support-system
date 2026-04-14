@@ -9,28 +9,31 @@ function Login({ setUser, setShowRegister }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleLogin = async () => {
-    try {
-      const res = await fetch(`${BASE_URL}/api/auth/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ email, password })
-      });
+const handleLogin = async () => {
+  try {
+    const res = await fetch(`${BASE_URL}/api/auth/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ email, password })
+    });
 
-      const data = await res.json();
+    const data = await res.json();
+    console.log(data); // ✅ see response
 
-      if (data.token) {
-        setUser(data);
-      } else {
-        alert("Login failed");
-      }
-    } catch (err) {
-      console.log(err);
-      alert("Server error");
+    if (res.ok) {
+      alert("Login successful");
+      setUser(data);
+    } else {
+      alert(data.error || "Login failed");
     }
-  };
+
+  } catch (err) {
+    console.log(err);
+    alert("Server error");
+  }
+};
 
   return (
     <div className="login-container">
