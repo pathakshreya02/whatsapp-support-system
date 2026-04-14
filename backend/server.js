@@ -4,27 +4,25 @@ const cors = require("cors");
 
 const app = express();
 
+// ✅ Middleware
 app.use(cors());
 app.use(express.json());
 
-// test route
+// ✅ Test route
 app.get("/", (req, res) => {
   res.send("Server is running...");
 });
 
-// 🔥 MongoDB Atlas Connection
+// ✅ Routes
+app.use("/api/auth", require("./routes/authRoutes"));
+app.use("/api/messages", require("./routes/messageRoutes"));
+
+// ✅ MongoDB
 mongoose.connect("mongodb+srv://admin:admin123@cluster0.bx1ps47.mongodb.net/whatsappDB?retryWrites=true&w=majority")
-.then(() => console.log("MongoDB Connected"))
-.catch(err => console.log(err));
+  .then(() => console.log("MongoDB Connected"))
+  .catch(err => console.log(err));
 
-// routes
-const messageRoutes = require("./routes/messageRoutes");
-app.use("/api/messages", messageRoutes);
-
-const authRoutes = require("./routes/authRoutes");
-app.use("/api/auth", authRoutes);
-
-// start server
+// ✅ Start server
 app.listen(5000, () => {
   console.log("Server running on port 5000");
 });

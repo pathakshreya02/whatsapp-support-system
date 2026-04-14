@@ -1,44 +1,71 @@
 import React, { useState } from "react";
 
-function Login({ setToken }) {
+const BASE_URL =
+  window.location.hostname === "localhost"
+    ? "http://localhost:5000"
+    : "https://whatsapp-support-system.onrender.com";
+
+function Login({ setUser, setShowRegister }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const handleLogin = async () => {
-    const res = await fetch("http://localhost:5000/api/auth/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ email, password })
-    });
+    try {
+      const res = await fetch(`${BASE_URL}/api/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ email, password })
+      });
 
-    const data = await res.json();
+      const data = await res.json();
 
-    if (data.token) {
-      setToken(data.token);
-    } else {
-      alert("Login failed");
+      if (data.token) {
+        setUser(data);
+      } else {
+        alert("Login failed");
+      }
+    } catch (err) {
+      console.log(err);
+      alert("Server error");
     }
   };
 
   return (
-    <div style={{ textAlign: "center", marginTop: "100px" }}>
+    <div className="login-container">
       <h2>Login</h2>
 
       <input
-        type="email"
         placeholder="Email"
         onChange={(e) => setEmail(e.target.value)}
-      /><br /><br />
+      />
 
       <input
-        type="password"
         placeholder="Password"
+        type="password"
         onChange={(e) => setPassword(e.target.value)}
-      /><br /><br />
+      />
 
       <button onClick={handleLogin}>Login</button>
+
+      {/* ✅ REGISTER OPTION */}
+      <p style={{ marginTop: "15px" }}>
+        Don't have an account?
+      </p>
+
+      <button
+        onClick={() => setShowRegister(true)}
+        style={{
+          padding: "8px",
+          backgroundColor: "#25D366",
+          color: "white",
+          border: "none",
+          cursor: "pointer"
+        }}
+      >
+        Register
+      </button>
     </div>
   );
 }

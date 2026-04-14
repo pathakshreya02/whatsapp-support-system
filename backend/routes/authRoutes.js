@@ -7,22 +7,34 @@ const jwt = require("jsonwebtoken");
 // REGISTER
 router.post("/register", async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    console.log("BODY:", req.body);
+
+    const { email, password } = req.body || {}; // ✅ FIX
+
+    if (!email || !password) {
+      return res.json({ error: "Missing email or password" });
+    }
+
+    const existingUser = await User.findOne({ email });
+
+    if (existingUser) {
+      return res.json({ message: "User already exists" });
+    }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const user = new User({
-      name,
+    const newUser = new User({
       email,
       password: hashedPassword
     });
 
-    await user.save();
+    await newUser.save();
 
-    res.json({ message: "User registered successfully" });
+    res.json({ message: "User created" });
 
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+  } catch (err) {
+    console.log("ERROR:", err); // 👈 IMPORTANT
+    res.status(500).json({ error: "Server error" });
   }
 });
 
@@ -34,13 +46,13 @@ router.post("/login", async (req, res) => {
     const user = await User.findOne({ email });
 
     if (!user) {
-      return res.status(400).json({ error: "User not found" });
+      return res.json({ error: "User not found" });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
-      return res.status(400).json({ error: "Invalid password" });
+      return res.json({ error: "Invalid password" });
     }
 
     const token = jwt.sign({ id: user._id }, "secretkey");
