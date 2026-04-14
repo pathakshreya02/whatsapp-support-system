@@ -18,8 +18,8 @@ function App() {
   // GET MESSAGES
   const getMessages = () => {
     fetch(`${BASE_URL}/api/messages`)
-      .then(res => res.json())
-      .then(data => {
+      .then((res) => res.json())
+      .then((data) => {
         if (Array.isArray(data)) setMessages(data);
         else setMessages([]);
       });
@@ -66,15 +66,37 @@ function App() {
   };
 
   // DELETE MESSAGE
-const deleteMessage = async (id) => {
-  await fetch(`${BASE_URL}/api/messages/${id}`, {
-    method: "DELETE"
-  });
-  getMessages();
-};
+  const deleteMessage = async (id) => {
+    await fetch(`${BASE_URL}/api/messages/${id}`, {
+      method: "DELETE"
+    });
+    getMessages();
+  };
+
+  // ✏️ EDIT MESSAGE
+  const editMessage = async (id, oldText) => {
+    const newText = prompt("Edit message:", oldText);
+
+    if (!newText) return;
+
+    try {
+      await fetch(`${BASE_URL}/api/messages/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ message: newText })
+      });
+
+      getMessages();
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <div className="container">
-      <h2>WhatsApp Support System</h2>
+      <h2>🟢 WhatsApp Support System</h2>
 
       <button onClick={() => setUser(null)}>Logout</button>
 
@@ -92,12 +114,32 @@ const deleteMessage = async (id) => {
                 : ""}
             </small>
 
-            {/* DELETE BUTTON */}
-       <button className="delete-btn" onClick={() => deleteMessage(msg._id)}>
-  🗑️
-</button>
+            {/* DELETE */}
+            <button
+              className="delete-btn"
+              onClick={() => deleteMessage(msg._id)}
+            >
+              🗑️
+            </button>
+
+            {/* EDIT */}
+            <button
+              onClick={() => editMessage(msg._id, msg.message)}
+              style={{
+                position: "absolute",
+                bottom: "-5px",
+                right: "25px",
+                background: "white",
+                borderRadius: "50%",
+                border: "none",
+                cursor: "pointer"
+              }}
+            >
+              ✏️
+            </button>
           </div>
         ))}
+
         <div ref={chatEndRef}></div>
       </div>
 
@@ -107,7 +149,7 @@ const deleteMessage = async (id) => {
           onChange={(e) => setText(e.target.value)}
           placeholder="Type a message"
         />
-        <button onClick={sendMessage}>Send</button>
+        <button onClick={sendMessage}>➤</button>
       </div>
     </div>
   );
