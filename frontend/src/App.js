@@ -73,10 +73,9 @@ function App() {
     getMessages();
   };
 
-  // ✏️ EDIT MESSAGE
+  // EDIT MESSAGE
   const editMessage = async (id, oldText) => {
     const newText = prompt("Edit message:", oldText);
-
     if (!newText) return;
 
     try {
@@ -108,35 +107,41 @@ function App() {
           >
             <div>{msg.message}</div>
 
+            {/* TIME (CLEAN FORMAT) */}
             <small>
               {msg.createdAt
-                ? new Date(msg.createdAt).toLocaleTimeString()
+                ? new Date(msg.createdAt).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit"
+                  })
                 : ""}
             </small>
 
-            {/* DELETE */}
-            <button
-              className="delete-btn"
-              onClick={() => deleteMessage(msg._id)}
-            >
-              🗑️
-            </button>
+            {/* BUTTONS */}
+            <div style={{ position: "absolute", bottom: "-5px", right: "5px" }}>
+              {/* DELETE */}
+              <button
+                className="delete-btn"
+                onClick={() => deleteMessage(msg._id)}
+              >
+                🗑️
+              </button>
 
-            {/* EDIT */}
-            <button
-              onClick={() => editMessage(msg._id, msg.message)}
-              style={{
-                position: "absolute",
-                bottom: "-5px",
-                right: "25px",
-                background: "white",
-                borderRadius: "50%",
-                border: "none",
-                cursor: "pointer"
-              }}
-            >
-              ✏️
-            </button>
+              {/* EDIT */}
+              <button
+                onClick={() => editMessage(msg._id, msg.message)}
+                style={{
+                  marginLeft: "5px",
+                  background: "white",
+                  borderRadius: "50%",
+                  border: "none",
+                  cursor: "pointer",
+                  boxShadow: "0 0 5px rgba(0,0,0,0.3)"
+                }}
+              >
+                📝
+              </button>
+            </div>
           </div>
         ))}
 
